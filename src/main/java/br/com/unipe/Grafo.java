@@ -416,4 +416,12 @@ public class Grafo {
                 }""".formatted(eDirigido ? "sim" : "não", ordem, tamanho, vertices, arestas, exibeGrausDosVertices(),
                 exibeAdjacencias(), exibeAdjacentes());
     }
+
+    public List<Vertice> getAmigos(String nome)
+    {
+        Vertice v = encontraVertice(nome)
+                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
+
+        return v.getAdjacencias();
+    }
 }
