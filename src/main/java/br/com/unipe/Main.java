@@ -1,32 +1,68 @@
 package br.com.unipe;
 
+import java.util.Map;
+import java.util.Scanner;
 
 public class Main {
+
     public static void main(String[] args) {
-        Grafo grafo = new Grafo(true, true);
 
-        grafo.adicionaVertices("1", "2", "3", "4", "5", "6", "7");
+        Grafo rede = new Grafo(false, false);
 
-        grafo.addAresta("5", "6", 1);
-        grafo.addAresta("5", "7", 2);
+        // Usuários
+        rede.adicionaVertices(
+                "Ana",
+                "Bruno",
+                "Carlos",
+                "Daniela",
+                "Eduardo",
+                "Fernanda"
+        );
 
-        grafo.addAresta("6", "7", 1);
-        grafo.addAresta("7", "6", 1);
+        // Conexões
+        rede.addAresta("Ana", "Bruno");
+        rede.addAresta("Ana", "Carlos");
 
-        grafo.addAresta("6", "2", 3);
-        grafo.addAresta("7", "4", 2);
+        rede.addAresta("Bruno", "Eduardo");
 
-        grafo.addAresta("2", "4", 1);
-        grafo.addAresta("4", "2", 1);
+        rede.addAresta("Carlos", "Eduardo");
+        rede.addAresta("Carlos", "Daniela");
 
-        grafo.addAresta("1", "2", 2);
-        grafo.addAresta("4", "1", 3);
+        rede.addAresta("Daniela", "Fernanda");
 
-        grafo.addAresta("2", "3", 2);
-        grafo.addAresta("1", "3", 1);
-        grafo.addAresta("4", "3", 4);
+        LinkedInAnalyzer analyzer = new LinkedInAnalyzer(rede);
 
-        System.out.println(grafo.greedySearch("1", "5"));
+        Scanner scanner = new Scanner(System.in);
 
+        System.out.println("=== LinkedIn Analyzer ===");
+        System.out.print("Digite o nome do usuário: ");
+        System.out.print("Lembrando que java e sensitive case");
+        System.out.print("Nomes:Ana, Bruno, Carlos, Daniela, Eduardo, Fernanda");
+
+        String nome = scanner.nextLine();
+
+        Map<String, Integer> sugestoes =
+                analyzer.sugerirConexoes(nome);
+
+        System.out.println();
+        System.out.println("Sugestões de conexão para " + nome + ":");
+
+        if (sugestoes.isEmpty())
+        {
+            System.out.println("Nenhuma sugestão encontrada.");
+        }
+        else
+        {
+            for (Map.Entry<String, Integer> sugestao : sugestoes.entrySet())
+            {
+                System.out.println(
+                        sugestao.getKey()
+                                + " (" + sugestao.getValue()
+                                + " amigo(s) em comum)"
+                );
+            }
+        }
+
+        scanner.close();
     }
 }
