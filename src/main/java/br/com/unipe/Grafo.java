@@ -424,7 +424,7 @@ public class Grafo {
         return v.getAdjacencias();
     }
 
-    // 5. Mapear Grupos Isolados (Sub-redes) — NOVO MÉTODO
+    // 5. Mapear Grupos Isolados (Sub-redes)
 
     // Mapeia os componentes conexos do grafo — retorna uma lista de grupos de vértices por sub-rede
     public List<List<String>> mapeiaSubRedes() {
