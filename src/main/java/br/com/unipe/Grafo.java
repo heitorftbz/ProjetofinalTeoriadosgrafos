@@ -211,7 +211,7 @@ public class Grafo {
                 () -> new IllegalArgumentException("Vertice " + origem + " não encontrado."));
         Vertice verticeDestino = destino == null ? null
                 : encontraVertice(destino).orElseThrow(
-                        () -> new IllegalArgumentException("Vertice " + destino + " não encontrado."));
+                () -> new IllegalArgumentException("Vertice " + destino + " não encontrado."));
 
         Stack<Vertice> pilha = new Stack<>();
         List<Vertice> visitados = new ArrayList<>();
@@ -417,11 +417,51 @@ public class Grafo {
                 exibeAdjacencias(), exibeAdjacentes());
     }
 
-    public List<Vertice> getAmigos(String nome)
-    {
+    public List<Vertice> getAmigos(String nome) {
         Vertice v = encontraVertice(nome)
                 .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
 
         return v.getAdjacencias();
     }
+
+    // 5. Mapear Grupos Isolados (Sub-redes)
+
+    // Mapeia os componentes conexos do grafo — retorna uma lista de grupos de vértices por sub-rede
+    public List<List<String>> mapeiaSubRedes() {
+        List<List<String>> subRedes = new ArrayList<>();
+        List<Vertice> visitados = new ArrayList<>();
+
+        for (Vertice vertice : vertices) {
+            if (!visitados.contains(vertice)) {
+                List<Vertice> grupo = new ArrayList<>();
+                dfsParaSubRede(vertice, visitados, grupo);
+                subRedes.add(grupo.stream().map(Vertice::getNome).toList());
+            }
+        }
+
+        System.out.println("Sub-redes encontradas: " + subRedes.size());
+        subRedes.forEach(grupo -> System.out.println("Grupo: " + grupo));
+
+        return subRedes;
+    }
+
+    // DFS auxiliar — percorre vizinhos de saída e entrada para identificar componentes conexos
+    private void dfsParaSubRede(Vertice atual, List<Vertice> visitados, List<Vertice> grupo) {
+        visitados.add(atual);
+        grupo.add(atual);
+
+        // Combina vizinhos de saída (adjacencias) e de entrada (adjacentes)
+        // para garantir conectividade em grafos dirigidos também
+        List<Vertice> vizinhos = new ArrayList<>(atual.getAdjacencias());
+        atual.getAdjacentes().forEach(v -> {
+            if (!vizinhos.contains(v)) vizinhos.add(v);
+        });
+
+        for (Vertice vizinho : vizinhos) {
+            if (!visitados.contains(vizinho)) {
+                dfsParaSubRede(vizinho, visitados, grupo);
+            }
+        }
+    }
+
 }
