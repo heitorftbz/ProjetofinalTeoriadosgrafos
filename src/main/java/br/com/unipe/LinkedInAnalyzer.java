@@ -49,4 +49,44 @@ public class LinkedInAnalyzer {
                         LinkedHashMap::putAll
                 );
     }
+
+    public int grauDeSeparacao(String origem, String destino) {
+
+        Vertice inicio = grafo.encontraVertice(origem).orElse(null);
+        Vertice fim = grafo.encontraVertice(destino).orElse(null);
+
+        if (inicio == null || fim == null) {
+            return -1;
+        }
+
+        Queue<Vertice> fila = new LinkedList<>();
+        List<Vertice> visitados = new ArrayList<>();
+        Map<Vertice, Integer> distancia = new HashMap<>();
+
+        fila.add(inicio);
+        visitados.add(inicio);
+        distancia.put(inicio, 0);
+
+        while (!fila.isEmpty()) {
+
+            Vertice atual = fila.poll();
+
+            if (atual.equals(fim)) {
+                return distancia.get(atual);
+            }
+
+            for (Vertice vizinho : atual.getAdjacencias()) {
+
+                if (!visitados.contains(vizinho)) {
+
+                    visitados.add(vizinho);
+                    distancia.put(vizinho, distancia.get(atual) + 1);
+                    fila.add(vizinho);
+
+                }
+            }
+        }
+
+        return -1;
+    }
 }
