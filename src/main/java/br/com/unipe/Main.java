@@ -62,7 +62,22 @@ public class Main {
                 );
             }
         }
+        System.out.println();
+        System.out.println("=== Grau de Separação ===");
 
+        System.out.print("Digite o nome da origem: ");
+        String origem = scanner.nextLine();
+
+        System.out.print("Digite o nome do destino: ");
+        String destino = scanner.nextLine();
+
+        int grau = analyzer.grauDeSeparacao(origem, destino);
+
+        if (grau == -1) {
+            System.out.println("Os usuários não possuem conexão.");
+        } else {
+            System.out.println("Grau de separação: " + grau);
+}
         scanner.close();
     }
 }
