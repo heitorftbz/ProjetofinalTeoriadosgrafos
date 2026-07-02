@@ -427,7 +427,8 @@ public class Grafo {
     // 5. Mapear Grupos Isolados (Sub-redes)
 
     // Mapeia os componentes conexos do grafo — retorna uma lista de grupos de vértices por sub-rede
-    public List<List<String>> mapeiaSubRedes() {
+    public List<List<String>> mapeiaSubRedes()
+    {
         List<List<String>> subRedes = new ArrayList<>();
         List<Vertice> visitados = new ArrayList<>();
 
@@ -438,10 +439,6 @@ public class Grafo {
                 subRedes.add(grupo.stream().map(Vertice::getNome).toList());
             }
         }
-
-        System.out.println("Sub-redes encontradas: " + subRedes.size());
-        subRedes.forEach(grupo -> System.out.println("Grupo: " + grupo));
-
         return subRedes;
     }
 
@@ -463,5 +460,31 @@ public class Grafo {
             }
         }
     }
+    public List<Vertice> getVertices()
+    {
+        return vertices;
+    }
 
-}
+    public List<Aresta> getArestas()
+    {
+        return arestas;
+    }
+    /// Parte #### - 4
+    public int getPeso(Vertice origem, Vertice destino) {
+
+        for (Aresta aresta : arestas) {
+
+            if (aresta.getVerticeOrigem().equals(origem)
+                    && aresta.getVerticeDestino().equals(destino)) {
+                return aresta.getPeso();
+            }
+
+            if (!eDirigido
+                    && aresta.getVerticeOrigem().equals(destino)
+                    && aresta.getVerticeDestino().equals(origem)) {
+                return aresta.getPeso();
+            }
+        }
+
+        return Integer.MAX_VALUE;
+    }}

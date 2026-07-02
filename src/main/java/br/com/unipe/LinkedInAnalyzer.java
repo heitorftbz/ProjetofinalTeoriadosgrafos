@@ -5,29 +5,38 @@ import java.util.*;
 public class LinkedInAnalyzer {
 
     private final Grafo grafo;
-
+    // ======================================================
+    // #### 1 - CONSTRUTOR DA ANÁLISE
+    // ======================================================
     public LinkedInAnalyzer(Grafo grafo) {
         this.grafo = grafo;
     }
 
-    public Map<String, Integer> sugerirConexoes(String usuario) {
+    // ======================================================
+    // #### 3 - GRAU DE SEPARAÇÃO
+    // ======================================================
+    public Map<String, Integer> sugerirConexoes(String usuario)
+    {
 
         List<Vertice> amigos = grafo.getAmigos(usuario);
 
         Set<String> amigosDiretos = new HashSet<>();
         Map<String, Integer> sugestoes = new HashMap<>();
 
-        for (Vertice amigo : amigos) {
+        for (Vertice amigo : amigos)
+        {
             amigosDiretos.add(amigo.getNome());
         }
 
-        for (Vertice amigo : amigos) {
+        for (Vertice amigo : amigos)
+        {
 
-            for (Vertice amigoDoAmigo : amigo.getAdjacencias()) {
+            for (Vertice amigoDoAmigo : amigo.getAdjacencias())
+            {
 
                 String nome = amigoDoAmigo.getNome();
 
-                if (nome.equals(usuario))
+                if (nome.equalsIgnoreCase(usuario))
                     continue;
 
                 if (amigosDiretos.contains(nome))
@@ -50,12 +59,17 @@ public class LinkedInAnalyzer {
                 );
     }
 
-    public int grauDeSeparacao(String origem, String destino) {
+    // ======================================================
+    // #### 3 - GRAU DE SEPARAÇÃO
+    // ======================================================
+    public int grauDeSeparacao(String origem, String destino)
+    {
 
         Vertice inicio = grafo.encontraVertice(origem).orElse(null);
         Vertice fim = grafo.encontraVertice(destino).orElse(null);
 
-        if (inicio == null || fim == null) {
+        if (inicio == null || fim == null)
+        {
             return -1;
         }
 
@@ -67,26 +81,97 @@ public class LinkedInAnalyzer {
         visitados.add(inicio);
         distancia.put(inicio, 0);
 
-        while (!fila.isEmpty()) {
+        while (!fila.isEmpty())
+        {
 
             Vertice atual = fila.poll();
 
-            if (atual.equals(fim)) {
+            if (atual.equals(fim))
+            {
                 return distancia.get(atual);
             }
 
-            for (Vertice vizinho : atual.getAdjacencias()) {
-
-                if (!visitados.contains(vizinho)) {
-
+            for (Vertice vizinho : atual.getAdjacencias())
+            {
+                if (!visitados.contains(vizinho))
+                {
                     visitados.add(vizinho);
                     distancia.put(vizinho, distancia.get(atual) + 1);
                     fila.add(vizinho);
-
                 }
             }
         }
 
         return -1;
+    }
+    // ======================================================
+    // #### 4 - ROTA E CUSTO DE MAIOR AFINIDADE
+    // ======================================================
+    public ResultadoRota melhorRota(String origem, String destino)
+    {
+
+        Vertice inicio = grafo.encontraVertice(origem).orElse(null);
+        Vertice fim = grafo.encontraVertice(destino).orElse(null);
+
+        if (inicio == null || fim == null)
+        {
+            return new ResultadoRota(new ArrayList<>(), -1);
+        }
+
+        Map<Vertice, Integer> distancia = new HashMap<>();
+        Map<Vertice, Vertice> anterior = new HashMap<>();
+
+        for (Vertice v : grafo.getVertices())
+        {
+            distancia.put(v, Integer.MAX_VALUE);
+        }
+
+        distancia.put(inicio, 0);
+
+        PriorityQueue<Vertice> fila =
+                new PriorityQueue<>(Comparator.comparingInt(distancia::get));
+
+        fila.add(inicio);
+
+        while (!fila.isEmpty())
+        {
+
+            Vertice atual = fila.poll();
+
+            for (Vertice vizinho : atual.getAdjacencias())
+            {
+
+                int peso = grafo.getPeso(atual, vizinho);
+
+                int novoCusto = distancia.get(atual) + peso;
+
+                if (novoCusto < distancia.get(vizinho))
+                {
+
+                    distancia.put(vizinho, novoCusto);
+                    anterior.put(vizinho, atual);
+
+                    fila.remove(vizinho);
+                    fila.add(vizinho);
+                }
+            }
+        }
+
+        if (distancia.get(fim) == Integer.MAX_VALUE)
+        {
+            return new ResultadoRota(new ArrayList<>(), -1);
+        }
+
+        List<String> caminho = new ArrayList<>();
+
+        Vertice atual = fim;
+
+        while (atual != null)
+        {
+            caminho.add(0, atual.getNome());
+            atual = anterior.get(atual);
+        }
+
+        return new ResultadoRota(caminho, distancia.get(fim));
     }
 }
